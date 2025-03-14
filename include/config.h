@@ -6,7 +6,7 @@
 #include <vector>
 
 class Config {
-  public:
+public:
     std::string secret_key;
     std::unordered_map<std::string, std::string> script_paths;
     std::vector<std::string> error_keywords;
@@ -14,7 +14,7 @@ class Config {
     int max_restarts;
     int port;
 
-    bool load(const std::string& filename);
+    bool loadFromFile(const std::string& filename); // Loads from .cfg file
 };
 
 #endif
