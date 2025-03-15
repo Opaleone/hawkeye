@@ -1,6 +1,8 @@
 #include "../include/watcher.h"
 #include "../include/utils.h"
 #include <iostream>
+#include <thread>
+#include <chrono>
 #include <unistd.h>
 #include <arpa/inet.h>
 #include <sys/types.h>
@@ -8,7 +10,15 @@
 #include <sstream>
 #include <unordered_map>
 
-Watcher::Watcher(const Config& cfg) : config(cfg) {}
+#include <thread>  // Required for std::thread
+#include <chrono>  // Required for time delays
+
+Watcher::Watcher(const Config& cfg) : config(cfg) {
+    // Start the monitoring thread correctly using a lambda
+    std::thread monitorThread(&Watcher::monitorProcesses, this);
+    monitorThread.detach();
+}
+
 
 void Watcher::startListening() {
     int server_fd, new_socket;
@@ -51,7 +61,7 @@ void Watcher::startListening() {
         read(new_socket, buffer, 1024);
         std::string receivedData(buffer);
 
-        processIncomingData(receivedData); // Fixed call
+        processIncomingData(receivedData); 
 
         close(new_socket);
     }
@@ -69,7 +79,37 @@ void Watcher::processIncomingData(const std::string& data) {
         return;
     }
 
-    processes[pid] = std::make_pair(0, programName);  // Fix for expected expression error
+    processes[pid] = std::make_pair(0, programName);
 
     Utils::logMessage("Monitoring PID: " + std::to_string(pid) + " (" + programName + ")");
+}
+
+void Watcher::monitorProcesses() {
+  while (true) {  // Run forever
+      std::this_thread::sleep_for(std::chrono::seconds(5)); // Check every 5 seconds
+
+      for (auto it = processes.begin(); it != processes.end(); ) {
+          int pid = it->first;
+          std::string programName = it->second.second;
+
+          if (!Utils::isProcessRunning(pid)) {
+              Utils::logMessage("Process " + std::to_string(pid) + " (" + programName + ") has stopped!");
+
+              // Restart process if max restarts aren't exceeded
+              int& restartCount = it->second.first;
+              if (restartCount < config.max_restarts) {
+                  Utils::logMessage("Restarting " + programName + "... Attempt " + std::to_string(restartCount + 1));
+                  restartCount++;
+                  Utils::restartProcess(config.script_paths[programName]);
+              } else {
+                  Utils::logMessage("Max restart attempts reached for " + programName);
+                  Utils::sendEmailAlert(pid, "Max restarts reached for " + programName);
+              }
+
+              it = processes.erase(it); // Remove from monitoring if max retries exceeded
+          } else {
+              ++it;
+          }
+      }
+  }
 }

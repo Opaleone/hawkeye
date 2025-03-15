@@ -8,5 +8,9 @@ int main() {
     std::cerr << "Failed to load config file. Exiting...\n";
     return 1;
   }
+
+  Watcher hawkeye(config);
+  hawkeye.startListening();
+
   return 0;
 }

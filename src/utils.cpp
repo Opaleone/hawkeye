@@ -9,6 +9,7 @@
 #include <signal.h>
 
 void Utils::logMessage(const std::string &message) {
+  std::cout << message << std::endl;
   std::ofstream logFile("hawkeye.log", std::ios::app);
   if (logFile.is_open()) {
     logFile << message << "\n";
@@ -46,4 +47,22 @@ void Utils::sendEmailAlert(int pid, const std::string &message) {
 
 bool Utils::isProcessRunning(pid_t pid) {
   return (kill(pid, 0) == 0);
+}
+
+#include "utils.h"
+#include <iostream>
+#include <cstdlib>
+
+void Utils::restartProcess(const std::string& scriptPath) {
+    if (scriptPath.empty()) {
+        logMessage("Error: Empty script path, cannot restart process.");
+        return;
+    }
+
+    std::string command = scriptPath + " &";
+    if (system(command.c_str()) != 0) {
+        logMessage("Failed to restart process using script: " + scriptPath);
+    } else {
+        logMessage("Restarted process using script: " + scriptPath);
+    }
 }
