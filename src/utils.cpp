@@ -1,5 +1,5 @@
-#include "../include/utils.h"
-#include "../include/config.h"
+#include "utils.h"
+#include "config.h"
 #include <fstream>
 #include <iostream>
 #include <unistd.h>
@@ -48,10 +48,6 @@ void Utils::sendEmailAlert(int pid, const std::string &message) {
 bool Utils::isProcessRunning(pid_t pid) {
   return (kill(pid, 0) == 0);
 }
-
-#include "utils.h"
-#include <iostream>
-#include <cstdlib>
 
 void Utils::restartProcess(const std::string& scriptPath) {
     if (scriptPath.empty()) {
