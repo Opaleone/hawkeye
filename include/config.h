@@ -11,6 +11,7 @@ public:
     std::unordered_map<std::string, std::string> script_paths;
     std::vector<std::string> error_keywords;
     std::string log_file;
+    std::string email;
     int max_restarts;
     int port;
 

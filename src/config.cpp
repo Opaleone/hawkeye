@@ -29,6 +29,8 @@ bool Config::loadFromFile(const std::string &filename) {
         script_paths[key.substr(7)] = value;
       else if (key.find("error_") == 0)
         error_keywords.push_back(value);
+      else if (key.find("email") == 0)
+        email = value;
     }
   }
 

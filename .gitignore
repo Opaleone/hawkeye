@@ -32,4 +32,4 @@
 *.app
 
 /scripts
-config.json
+config.cfg
