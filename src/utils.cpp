@@ -1,5 +1,5 @@
-#include "utils.h"
-#include "config.h"
+#include "../include/utils.h"
+#include "../include/config.h"
 #include <fstream>
 #include <iostream>
 #include <unistd.h>
@@ -7,17 +7,39 @@
 #include <sys/wait.h>
 #include <cstdlib>
 #include <signal.h>
+#include <ctime>
+#include <iomanip>
+#include <sstream>
 
-void Utils::logMessage(const std::string &message) {
-  std::cout << message << std::endl;
+void Utils::logMessage(const std::string& message) {
+  // Get current time
+  std::time_t now = std::time(nullptr);
+  std::tm* localTime = std::localtime(&now);
+
+  // Format timestamp as [YYYY-MM-DD HH:MM:SS]
+  std::ostringstream timestamp;
+  timestamp << "[" << (1900 + localTime->tm_year) << "-"
+            << std::setw(2) << std::setfill('0') << (localTime->tm_mon + 1) << "-"
+            << std::setw(2) << std::setfill('0') << localTime->tm_mday << " "
+            << std::setw(2) << std::setfill('0') << localTime->tm_hour << ":"
+            << std::setw(2) << std::setfill('0') << localTime->tm_min << ":"
+            << std::setw(2) << std::setfill('0') << localTime->tm_sec << "] ";
+
+  // Create the final log message with timestamp
+  std::string logEntry = timestamp.str() + message;
+
+  // Print to console
+  std::cout << logEntry << std::endl;
+
+  // Write to log file
   std::ofstream logFile("hawkeye.log", std::ios::app);
   if (logFile.is_open()) {
-    logFile << message << "\n";
-    logFile.close();
+      logFile << logEntry << "\n";
+      logFile.close();
   } else {
-    std::cerr << "Failed to open log file." << std::endl;
+      std::cerr << "Failed to open log file." << std::endl;
   }
-};
+}
 
 bool Utils::checkProcessErrors(pid_t pid, const std::vector<std::string> &errorKeywords) {
   std::ifstream errorFile("/proc/" + std::to_string(pid) + "/fd/2");
