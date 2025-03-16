@@ -79,6 +79,10 @@ Then run `make` in the terminal to compile the program.
 
 Navigate to folder where Hawkeye is stored in a terminal and type:
 
+`make run`
+
+or
+
 `./hawkeye`
 
 Terminal should read:
@@ -86,6 +90,10 @@ Terminal should read:
     Listening on PORT [Whatever port you entered in config.cfg]
 
 Now Hawkeye will wait for communication from your monitored programs!
+
+### To Uninstall
+
+
 
 ## Usage
 
@@ -96,7 +104,7 @@ Hawkeye will also monitor for hung processes by monitoring the processes error m
 In the `config.cfg`, you can provide a `MAX_RESTART` limit that will tell Hawkeye how many restarts of a program is allowed before it will stop trying. If Hawkeye reaches this limit, it will cease the restart process and send out an email alert to the email provided.
 
 ### Code in Monitored program
-You're monitored program must include a function that sends it's own PID, Name, and the `secret_key` within Hawkeye for authentication.
+Your monitored program must include a function that sends it's own PID, Name, and the `secret_key` within Hawkeye for authentication.
 
 Here's an example of the code I built for my Node.JS program:
 
