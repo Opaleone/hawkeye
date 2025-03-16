@@ -5,7 +5,8 @@
 #include <unordered_map>
 #include <vector>
 
-class Config {
+class Config
+{
 public:
     std::string secret_key;
     std::unordered_map<std::string, std::string> script_paths;
@@ -15,7 +16,7 @@ public:
     int max_restarts;
     int port;
 
-    bool loadFromFile(const std::string& filename); // Loads from .cfg file
+    bool loadFromFile(const std::string &filename); // Loads from .cfg file
 };
 
 #endif

@@ -11,10 +11,11 @@
 #include <iomanip>
 #include <sstream>
 
-void Utils::logMessage(const std::string& message) {
+void Utils::logMessage(const std::string &message)
+{
   // Get current time
   std::time_t now = std::time(nullptr);
-  std::tm* localTime = std::localtime(&now);
+  std::tm *localTime = std::localtime(&now);
 
   // Format timestamp as [YYYY-MM-DD HH:MM:SS]
   std::ostringstream timestamp;
@@ -33,22 +34,30 @@ void Utils::logMessage(const std::string& message) {
 
   // Write to log file
   std::ofstream logFile("hawkeye.log", std::ios::app);
-  if (logFile.is_open()) {
-      logFile << logEntry << "\n";
-      logFile.close();
-  } else {
-      std::cerr << "Failed to open log file." << std::endl;
+  if (logFile.is_open())
+  {
+    logFile << logEntry << "\n";
+    logFile.close();
+  }
+  else
+  {
+    std::cerr << "Failed to open log file." << std::endl;
   }
 }
 
-bool Utils::checkProcessErrors(pid_t pid, const std::vector<std::string> &errorKeywords) {
+bool Utils::checkProcessErrors(pid_t pid, const std::vector<std::string> &errorKeywords)
+{
   std::ifstream errorFile("/proc/" + std::to_string(pid) + "/fd/2");
-  if (!errorFile.is_open()) return false;
+  if (!errorFile.is_open())
+    return false;
 
   std::string line;
-  while (std::getline(errorFile, line)) {
-    for (std::vector<std::string>::const_iterator it = errorKeywords.begin(); it != errorKeywords.end(); ++it) {
-      if (line.find(*it) != std::string::npos) {
+  while (std::getline(errorFile, line))
+  {
+    for (std::vector<std::string>::const_iterator it = errorKeywords.begin(); it != errorKeywords.end(); ++it)
+    {
+      if (line.find(*it) != std::string::npos)
+      {
         return true;
       }
     }
@@ -56,31 +65,44 @@ bool Utils::checkProcessErrors(pid_t pid, const std::vector<std::string> &errorK
   return false;
 };
 
-void Utils::sendEmailAlert(int pid, const std::string &message) {
+void Utils::sendEmailAlert(int pid, const std::string &message)
+{
   Config cfg;
 
   std::string command = "echo 'Process " + std::to_string(pid) + " encountered an error: " + message + "' | mail -s 'Process Failure Alert' " + cfg.email;
-  if (system(command.c_str()) != 0) {
+  if (system(command.c_str()) != 0)
+  {
     logMessage("Failed to send email alert for PID: " + std::to_string(pid));
-  } else {
+  }
+  else
+  {
     logMessage("Sent email alert for PID: " + std::to_string(pid));
   }
 };
 
-bool Utils::isProcessRunning(pid_t pid) {
+bool Utils::isProcessRunning(pid_t pid)
+{
   return (kill(pid, 0) == 0);
 }
 
-void Utils::restartProcess(const std::string& scriptPath) {
-    if (scriptPath.empty()) {
-        logMessage("Error: Empty script path, cannot restart process.");
-        return;
-    }
+void Utils::restartProcess(const std::string &scriptPath)
+{
+  if (scriptPath.empty())
+  {
+    logMessage("Error: Empty script path, cannot restart process.");
+    return;
+  }
 
-    std::string command = scriptPath + " &";
-    if (system(command.c_str()) != 0) {
-        logMessage("Failed to restart process using script: " + scriptPath);
-    } else {
-        logMessage("Restarted process using script: " + scriptPath);
-    }
+  logMessage("Restarting process using script: " + scriptPath);
+
+  // Run the script with bash in the background
+  std::string command = "bash " + scriptPath + " &";
+  if (system(command.c_str()) != 0)
+  {
+    logMessage("Failed to restart process using script: " + scriptPath);
+  }
+  else
+  {
+    logMessage("Process restarted successfully: " + scriptPath);
+  }
 }

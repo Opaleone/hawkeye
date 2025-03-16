@@ -2,9 +2,11 @@
 #include "include/watcher.h"
 #include <iostream>
 
-int main() {
+int main()
+{
   Config config;
-  if (!config.loadFromFile("config.cfg")) {
+  if (!config.loadFromFile("config.cfg"))
+  {
     std::cerr << "Failed to load config file. Exiting...\n";
     return 1;
   }

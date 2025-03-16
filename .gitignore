@@ -36,3 +36,4 @@ hawkeye
 bin/
 build/
 obj/
+.vscode/
