@@ -97,7 +97,7 @@ Now Hawkeye will wait for communication from your monitored programs!
 
 ## Usage
 
-Hawkeye simply monitors process ID's from whatever programs you want monitored and will restart them using shell scripts provided. 
+Hawkeye simply monitors process ID's from whatever programs you want monitored and will restart them using shell scripts provided in the config.cfg.
 
 Hawkeye will also monitor for hung processes by monitoring the processes error messages as well.
 
