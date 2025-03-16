@@ -8,21 +8,18 @@ TARGET = hawkeye
 SRCS = main.cpp $(wildcard $(SRC_DIR)/*.cpp)
 OBJS = $(patsubst $(SRC_DIR)/%.cpp, $(OBJ_DIR)/%.o, $(SRCS))
 
-$(TARGET): $(OBJS) | $(BIN_DIR)
+$(TARGET): $(OBJS)
 	$(CXX) $(CXXFLAGS) -o $@ $(OBJS)
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp | $(OBJ_DIR)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
-
-$(BIN_DIR):
-	mkdir -p $(BIN_DIR)
 
 $(OBJ_DIR):
 	mkdir -p $(OBJ_DIR)
 
 .PHONY: clean
 clean:
-	rm -rf $(OBJ_DIR) $(BIN_DIR)
+	rm -rf $(OBJ_DIR) ./$(TARGET)
 
 .PHONY: run
 run: $(TARGET)
