@@ -12,7 +12,6 @@
 
 Watcher::Watcher(const Config &cfg) : config(cfg)
 {
-    // Start the monitoring thread correctly using a lambda
     std::thread monitorThread(&Watcher::monitorProcesses, this);
     monitorThread.detach();
 }
