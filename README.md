@@ -17,19 +17,28 @@ A program designed specifically for Linux distributions that monitors process id
 `
 sudo apt update && sudo apt upgrade -y
 `
-### g++, make and git (Latest version)
+
+### Make sure the following programs and libraries are installed
+
+g++, make and git (Latest version)
+
 `
 sudo apt install -y g++ make git
 `
-### libssl-dev (For TCP Communication)
+
+libssl-dev (For TCP Communication)
+
 `
 sudo apt install -y libssl-dev
 `
-### mailutils (For email communication)
+
+mailutils (For email communication)
+
 `
 sudo apt install -y mailutils
 `
 
+### Configuring Hawkeye
 Hawkeye can be download as a zip or cloned down using Git using code menu above
 
 Then make sure to edit `config.cfg` with your personal options and create a secret key to be used by both hawkeye and monitored program for authentication
@@ -68,7 +77,7 @@ Then run `make` in the terminal to compile the program.
 
 ### To run Hawkeye
 
-Navigate to folder where Hawkeye is stored and type:
+Navigate to folder where Hawkeye is stored in a terminal and type:
 
 `./hawkeye`
 
@@ -87,41 +96,9 @@ Hawkeye will also monitor for hung processes by monitoring the processes error m
 In the `config.cfg`, you can provide a `MAX_RESTART` limit that will tell Hawkeye how many restarts of a program is allowed before it will stop trying. If Hawkeye reaches this limit, it will cease the restart process and send out an email alert to the email provided.
 
 ### Code in Monitored program
-You're monitored program must include a function that sends it's own PID, Name, and the `secret_key` within Hawkeye for autentication.
+You're monitored program must include a function that sends it's own PID, Name, and the `secret_key` within Hawkeye for authentication.
 
 Here's an example of the code I built for my Node.JS program:
-
-### UTILS
-```
-const net = require('net');
-
-hawkeyeConnect: () => {
-    const client = new net.Socket();
-
-    const data = `${process.pid} NAME_OF_PROGRAM ${config.hawkeye.hawkeyeKey}`;
-
-    client.connect(config.hawkeye.port, config.hawkeye.host, () => {
-      client.write(data);
-      client.end();
-      console.log("Connected to Hawkeye, sending PID...");
-    })
-
-    client.on('error', (e) => {
-      const todayDate = new Date().toJSON();
-      const msg = `${todayDate}: ${e} ::hawkeye connect::\n`;
-
-      // Log error to file
-      fs.appendFile('errors.log', msg, (err) => {
-        if (err) console.error(err)
-      })
-    })
-  }
-```
-
-### INDEX.JS
-```
-hawkeyeConnect();
-```
 
 ### CONFIG
 ```
@@ -133,9 +110,37 @@ hawkeyeConnect();
   }
 }
 ```
+### UTILS
+```
+const config = '../config.json';
+const net = require('net');
+
+hawkeyeConnect: () => {
+    const client = new net.Socket();
+
+    // process.pid is how vanilla node.js retrieves the process id of the currently running program.
+    // May be a different process depending on language used
+    const data = `${process.pid} <NAME_OF_PROGRAM> ${config.hawkeye.hawkeyeKey}`;
+
+    client.connect(config.hawkeye.port, config.hawkeye.host, () => {
+      client.write(data);
+      client.end();
+      console.log("Connected to Hawkeye, sending PID...");
+    })
+
+    client.on('error', (e) => {
+      console.error(e);
+    })
+  }
+```
+
+### INDEX.JS
+```
+hawkeyeConnect();
+```
 It doesn't matter what language you use. Just be sure to include `data` in the format:
 
-`pid [NAME_OF_PROGRAM] secret_key`
+`pid <NAME_OF_PROGRAM> <secret_key>`
 
 `NAME_OF_PROGRAM` must match the key for the script in your `config.cfg` exactly.
 
