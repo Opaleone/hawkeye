@@ -7,7 +7,7 @@ A program designed specifically for Linux distributions that monitors process id
 * [Installation](#installation)
 * [Usage](#usage)
 * [Credits](#credits)
-* [License](License)
+* [License](./LICENSE)
 
 ## Installation
 > Built specifically for Raspberry Pi OS (Linux). 
@@ -33,6 +33,8 @@ sudo apt install -y mailutils
 Hawkeye can be download as a zip or cloned down using Git using code menu above
 
 Then make sure to edit `config.cfg` with your personal options and create a secret key to be used by both hawkeye and monitored program for authentication
+
+### [CONFIG.CFG](./config.cfg)
 
 ```
 secret_key=your_secret_key
